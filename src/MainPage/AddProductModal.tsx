@@ -8,28 +8,27 @@ import {
   Input,
   Grid,
 } from "semantic-ui-react";
-import { getModulesArr, computeBlueprint } from "../module";
-import { Module, NeededModule } from "../model";
-import { DataContext, ActionTypes } from "./DataContext";
+import { Module } from "../model";
+import { DataContext, ActionTypes, DataContextType, Product } from "../components/DataContext";
 
 interface IProps extends ModalProps {}
 
-const optionsList = getModulesArr().map((module: Module) => {
-  const { name } = module;
-
-  return {
-    key: name,
-    value: name,
-    text: name,
-  };
-});
-
-const AddProductModal = (props: IProps) => {
+const AddProductModal = ({ onClose, ...props }: IProps) => {
+  const { data, addProduct } = useContext(DataContext) as DataContextType;
   const [name, setName] = useState("");
   const [value, setValue] = useState([]);
   const [modules, setModules] = useState({} as Record<string, number>);
-  const options: DropdownItemProps[] = optionsList;
-  const {data, dispatch} = useContext(DataContext) as any;
+  const options: DropdownItemProps[] = (Object.values(
+    data.modules
+  ) as Module[]).map((module: Module) => {
+    const { name } = module;
+
+    return {
+      key: name,
+      value: name,
+      text: name,
+    };
+  });
 
   const handleChange = (e: any, { value: val }: any) => {
     setValue(val);
@@ -58,26 +57,21 @@ const AddProductModal = (props: IProps) => {
     });
 
   const createProduct = () => {
-    dispatch({
-      type: ActionTypes.AddProduct,
-      payload: {
-        product: {
-          name,
-          modules,
-        },
-      },
-    })
-    // const neededModules = Object.entries(modules).map(
-    //   ([moduleName, amount]: [string, number]) =>
-    //     new NeededModule(moduleName, amount)
-    // );
+    addProduct({ name, modules } as Product);
 
-    // console.log("x", computeBlueprint(name, neededModules, 1));
+    setName("");
+    setValue([]);
+    setModules({});
+
+    if (onClose) {
+      // @ts-ignore
+      onClose();
+    }
   };
 
   console.log(value, modules);
   return (
-    <Modal {...props}>
+    <Modal onClose={onClose} {...props}>
       <Modal.Header>Add Product</Modal.Header>
       <Modal.Content>
         <Form>
