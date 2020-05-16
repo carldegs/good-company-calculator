@@ -24,12 +24,15 @@ const ModulesTable = () => {
 
   const getBenchesOptions = (benches: Bench[]): DropdownItemProps[] =>
     benches.map((bench) => {
-      const { name } = bench;
-
+      const { name, iconId, iconSprite } = bench;
+      const url = getModuleImgUrl(iconId as string, iconSprite as string);
       return {
         key: name,
         value: name,
         text: stringifyEnum(BenchName, name),
+        image: {
+          src: url,
+        }
       };
     });
 
