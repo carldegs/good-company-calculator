@@ -27,6 +27,7 @@ export interface Action {
 
 export enum ActionTypes {
   AddProduct,
+  RemoveProduct,
   ChangeMultiplier,
   ComputeModules,
   UpdateBench,
@@ -59,7 +60,11 @@ const getInitialState = () => {
     try {
       const { computedModules, modules, products } = JSON.parse(dataStr);
       return {
-        computedModules: parseState(computedModules, ComputedModule, "module.name"),
+        computedModules: parseState(
+          computedModules,
+          ComputedModule,
+          "module.name"
+        ),
         modules: parseState(modules, Module),
         products: parseState(products, ComputedProduct, "module.name"),
       };
@@ -80,6 +85,7 @@ export interface ActionCreatorsType {
   changeMultiplier(name: string, value: number): null;
   computeModules(): null;
   updateBench(moduleName: string, bench: BenchName): null;
+  removeProduct(name: string): null;
 }
 
 export interface DataContextType extends ActionCreatorsType {
@@ -112,8 +118,11 @@ const setActionCreators = (dispatch: any) => {
       callDispatch(ActionTypes.ComputeModules);
     },
     updateBench: (moduleName, bench) => {
-      callDispatch(ActionTypes.UpdateBench, { moduleName, bench })
-    }
+      callDispatch(ActionTypes.UpdateBench, { moduleName, bench });
+    },
+    removeProduct: (name) => {
+      callDispatch(ActionTypes.RemoveProduct, name);
+    },
   } as ActionCreatorsType;
 };
 

@@ -106,3 +106,9 @@ const recursion = (
 
   return res;
 };
+
+export const deleteProperty = (object: Record<string, any>, property: string): Record<string, any> => {
+  let newObject = {...object};
+  delete newObject[property];
+  return newObject;
+}

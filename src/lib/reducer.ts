@@ -1,6 +1,6 @@
 import { State, ActionTypes } from "./DataContext";
 import { ComputedProduct } from "./model";
-import { createComputedModules } from "../helper";
+import { createComputedModules, deleteProperty } from "../helper";
 
 const reducer = (state: State, action: any) => {
   const { payload, type } = action;
@@ -13,6 +13,11 @@ const reducer = (state: State, action: any) => {
           [(payload as ComputedProduct).module.name]: payload,
         }
       };
+    case ActionTypes.RemoveProduct:
+      return {
+        ...state,
+        products: deleteProperty(state.products, payload),
+      }
     case ActionTypes.ChangeMultiplier:
       return {
         ...state,

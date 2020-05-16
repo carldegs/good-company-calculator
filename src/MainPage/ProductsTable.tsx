@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import MainTable from "../components/MainTable";
-import { Input, Label } from "semantic-ui-react";
+import { Input, Label, Button, Icon } from "semantic-ui-react";
 import { DataContext, DataContextType } from "../lib/DataContext";
 import { toArray } from "../helper";
 import {
@@ -10,11 +10,18 @@ import {
 } from "../lib/model";
 
 const ProductsTable = () => {
-  const { data, changeMultiplier, computeModules } = useContext(DataContext) as DataContextType;
+  const { data, changeMultiplier, computeModules, removeProduct } = useContext(
+    DataContext
+  ) as DataContextType;
   const { products } = data;
 
   const handleMultiplierChange = (e: any, { name, value }: any) => {
     changeMultiplier(name, value);
+    computeModules();
+  };
+
+  const handleRemoveProduct = (e: any, { name }: any) => {
+    removeProduct(name);
     computeModules();
   };
 
@@ -54,6 +61,16 @@ const ProductsTable = () => {
             );
           })}
         </>
+      ),
+    },
+    {
+      name: "",
+      value: "actions",
+      sortable: false,
+      render: (row: FlatComputedProduct) => (
+        <Button icon basic name={row.name} onClick={handleRemoveProduct}>
+          <Icon name="remove" />
+        </Button>
       ),
     },
   ];
