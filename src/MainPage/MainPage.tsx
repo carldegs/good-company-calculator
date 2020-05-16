@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Container, Header, Button } from "semantic-ui-react";
-import { DataContext } from "../components/DataContext";
+import { DataContext, DataContextType } from "../lib/DataContext";
 import AddProductModal from "./AddProductModal";
 import ProductsTable from "./ProductsTable";
+import ModulesTable from "./ModulesTable";
 
 const MainPage = () => {
-  const { data } = useContext(DataContext) as any;
+  const { data } = useContext(DataContext) as DataContextType;
   const [showAddProductModal, setShowAddProductModal] = useState(false);
 
   useEffect(() => {
@@ -33,9 +34,17 @@ const MainPage = () => {
         <Button onClick={toggleAddProductModal}>Add Product</Button>
       </div>
       <ProductsTable />
-      <br/>
-      <Button fluid>Compute Modules</Button>
-      <br/>
+      <br />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Header>Modules</Header>
+      </div>
+      <ModulesTable />
     </Container>
   );
 };

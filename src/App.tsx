@@ -1,7 +1,7 @@
-import React, { useEffect, useContext } from "react";
+import React from "react";
 import "./App.css";
 
-import { DataProvider, DataContext } from "./components/DataContext";
+import { DataProvider } from "./lib/DataContext";
 import MainPage from "./MainPage";
 
 function App() {

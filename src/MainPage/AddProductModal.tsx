@@ -8,13 +8,13 @@ import {
   Input,
   Grid,
 } from "semantic-ui-react";
-import { Module } from "../model";
-import { DataContext, ActionTypes, DataContextType, Product } from "../components/DataContext";
+import { Module } from "../lib/model";
+import { DataContext, DataContextType } from "../lib/DataContext";
 
 interface IProps extends ModalProps {}
 
 const AddProductModal = ({ onClose, ...props }: IProps) => {
-  const { data, addProduct } = useContext(DataContext) as DataContextType;
+  const { data, addProduct, computeModules } = useContext(DataContext) as DataContextType;
   const [name, setName] = useState("");
   const [value, setValue] = useState([]);
   const [modules, setModules] = useState({} as Record<string, number>);
@@ -57,7 +57,8 @@ const AddProductModal = ({ onClose, ...props }: IProps) => {
     });
 
   const createProduct = () => {
-    addProduct({ name, modules } as Product);
+    addProduct(name, modules);
+    computeModules();
 
     setName("");
     setValue([]);

@@ -3,10 +3,7 @@ import {
   BenchName,
   Bench,
   NeededModule,
-  BlueprintModule,
-  FlatBluePrintModule,
-} from "./model";
-import findIndex from "lodash/fp/findIndex";
+} from "./lib/model";
 
 export const Plastic = new Module("Plastic");
 export const Chemicals = new Module("Chemicals");
@@ -152,103 +149,3 @@ export const initModulesArr: Module[] = [
   // Tier 4
   EnhancedBatteryCell,
 ];
-
-// const modules: Record<string, any> = modulesArr.reduce((acc: any, curr) => {
-//   acc[curr.name] = curr;
-//   return acc;
-// });
-
-// export const getModules = () => modules;
-// export const getModulesArr = () => modulesArr;
-// export const getModuleNames = (): string[] => modulesArr.map((module) => module.name);
-// export const getModule = (moduleName: string): Module => modules[moduleName];
-
-// export const computeBlueprint = (
-//   name: string,
-//   neededModules: NeededModule[],
-//   multiplier: number
-// ) => {
-//   let blueprint: BlueprintModule[] = [];
-//   let rootName = name;
-
-//   blueprint.push(new BlueprintModule(name, multiplier, 1, '', new Bench(BenchName.AssemblyBench, 0.67)));
-//   recursion(blueprint, multiplier, neededModules, name);
-
-//   return blueprint.map((module) => {
-//     const { name, amount, parent, bench, output } = module;
-
-//     const parentName = !!parent ? `${parent}${rootName !== parent ? ` (${rootName})` : ''}` : "";
-//     const outputPerDay = bench && !!bench.time ? output / bench.time : 0;
-//     return new FlatBluePrintModule(
-//       name,
-//       bench?.name,
-//       parentName,
-//       bench?.time,
-//       output,
-//       outputPerDay,
-//       amount,
-//       bench && !!outputPerDay ? amount / outputPerDay : 0
-//     );
-//   }) as FlatBluePrintModule[];
-// };
-
-// const recursion = (
-//   blueprint: BlueprintModule[],
-//   multiplier: number,
-//   currModules: NeededModule[],
-//   parentName: string,
-// ) => {
-//   for (let module of currModules) {
-//     const { name, amount } = module;
-//     const { benches, neededModules, output } = getModule(name) || {};
-
-//     blueprint.push(
-//       new BlueprintModule(
-//         name,
-//         amount * multiplier,
-//         output,
-//         parentName,
-//         !!benches ? benches[0] : undefined
-//       )
-//     );
-
-//     if (benches && neededModules) {
-//       recursion(blueprint, multiplier, neededModules, name);
-//     }
-//   }
-// };
-
-// export const joinBlueprints = (blueprints: FlatBluePrintModule[][]): FlatBluePrintModule[] => {
-//   let merged: FlatBluePrintModule[] = [];
-//   blueprints.flat().forEach(blueprint => {
-//     const index = findIndex(bp => bp.name === blueprint.name, merged);
-
-//     if(index === -1) {
-//       merged.push(blueprint);
-//     } else {
-//       merged[index] = {
-//         ...merged[index],
-//         parent: `${merged[index].parent}, ${blueprint.parent}`,
-//         neededModules: merged[index].neededModules + blueprint.neededModules,
-//         neededBenches: merged[index].neededBenches + blueprint.neededBenches,
-//       };
-//     }
-//   });
-
-//   return merged;
-// }
-
-// export const splitRootBlueprints = (blueprints: FlatBluePrintModule[]): FlatBluePrintModule[][] => {
-//   let root: FlatBluePrintModule[] = [];
-//   let data: FlatBluePrintModule[] = [];
-
-//   blueprints.forEach(blueprint => {
-//     if (!blueprint.parent) {
-//       root.push(blueprint);
-//     } else {
-//       data.push(blueprint);
-//     }
-//   });
-
-//   return [root, data];
-// }
