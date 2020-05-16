@@ -5,7 +5,12 @@ export enum BenchName {
   ElectronicsWorkbench,
   ChemistryTable,
   AssemblyBench,
-  PickAndPlaceMachine,
+  PickandPlaceMachine,
+  MechanicsWorkbench,
+  PrecisionWorkbench,
+  WeldingTable,
+  HydraulicsWorkbench,
+  AdvancedElectronicsWorkbench
 }
 
 export class Module {
@@ -13,17 +18,21 @@ export class Module {
     public name: string,
     public neededModules: NeededModule[] = [],
     public benches: Bench[] = [new Bench(BenchName.InputZone, 0)],
-    public output: number = 1
+    public output: number = 1,
+    public iconId: string = "",
+    public iconSprite: string = "",
   ) {}
 
   static parse(object: any): Module {
-    const { name, neededModules, benches, output } = object;
+    const { name, neededModules, benches, output, iconId, iconSprite } = object;
 
     return new Module(
       name,
       neededModules.map((nm: any) => NeededModule.parse(nm)),
       benches.map((b: any) => Bench.parse(b)),
-      output
+      output,
+      iconId,
+      iconSprite
     );
   }
 }
@@ -58,6 +67,8 @@ export interface FlatComputedModule {
   outputPerDay: number;
   numOfNeededModules: number;
   neededBenches: number;
+  iconId: string;
+  iconSprite: string;
 }
 
 export class ComputedModule {
@@ -68,7 +79,7 @@ export class ComputedModule {
   constructor(
     public module: Module,
     public parents: ParentModule[] = [],
-    public selectedBench?: BenchName
+    public selectedBench?: BenchName,
   ) {
     const { output, benches } = module;
 
@@ -101,7 +112,7 @@ export class ComputedModule {
   }
 
   public flatten(): FlatComputedModule {
-    const { name, neededModules, benches, output } = this.module;
+    const { name, neededModules, benches, output, iconId, iconSprite } = this.module;
 
     return {
       name,
@@ -112,7 +123,9 @@ export class ComputedModule {
       selectedBench: this.selectedBench,
       outputPerDay: this.outputPerDay,
       numOfNeededModules: this.neededModules,
-      neededBenches: this.neededBenches
+      neededBenches: this.neededBenches,
+      iconId,
+      iconSprite,
     };
   }
 
@@ -183,20 +196,20 @@ export interface FlatComputedProduct {
 }
 
 export class NeededModule {
-  constructor(public name: string, public amount: number) {}
+  constructor(public name: string, public amount: number, public iconId?: string, public iconSprite?: string) {}
 
   static parse(object: any): NeededModule {
-    const { name, amount } = object;
-    return new NeededModule(name, amount);
+    const { name, amount, iconId, iconSprite } = object;
+    return new NeededModule(name, amount, iconId, iconSprite);
   }
 }
 
 export class Bench {
-  constructor(public name: BenchName, public time: number) {}
+  constructor(public name: BenchName, public time: number, public iconId?: string, public iconSprite?: string) {}
 
   static parse(object: any): Bench {
-    const { name, time } = object;
-    return new Bench(name, time);
+    const { name, time, iconId, iconSprite } = object;
+    return new Bench(name, time, iconId, iconSprite);
   }
 }
 

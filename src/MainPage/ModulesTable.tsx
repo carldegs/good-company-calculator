@@ -6,6 +6,7 @@ import {
   Table,
   Header,
   Popup,
+  Image,
 } from "semantic-ui-react";
 import { DataContext, DataContextType } from "../lib/DataContext";
 import { toArray, stringifyEnum } from "../helper";
@@ -15,6 +16,7 @@ import {
   Bench,
   BenchName,
 } from "../lib/model";
+import { getModuleImgUrl } from "../lib/modules";
 
 const ModulesTable = () => {
   const { data, updateBench } = useContext(DataContext) as DataContextType;
@@ -36,6 +38,12 @@ const ModulesTable = () => {
       name: "Name",
       value: "name",
       sortable: true,
+      render: (row: FlatComputedModule) => (
+        <Header as="h4">
+          <Image src={getModuleImgUrl(row.iconId, row.iconSprite)} />
+          <Header.Content>{row.name}</Header.Content>
+        </Header>
+      ),
     },
     {
       name: "Bench",

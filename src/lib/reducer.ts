@@ -39,6 +39,12 @@ const reducer = (state: State, action: any) => {
           [payload.moduleName]: state.computedModules[payload.moduleName].updateSelectedBench(payload.bench),
         }
       }
+    case ActionTypes.FetchModules:
+      return {
+        ...state,
+        modules: payload.modules,
+        modulesUpdateDate: payload.updateDate,
+      }
     default:
       return state;
   }

@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect } from "react";
 import {
   Module,
   ComputedModule,
@@ -7,9 +7,9 @@ import {
   Bench,
   BenchName,
 } from "./model";
-import { initModulesArr } from "../module";
 import { toArray, ToArrayType, toObject } from "../helper";
 import reducer from "./reducer";
+import { fetchModules } from "./modules";
 
 const localStorageKey = "good-company-calculator";
 const DataContext = React.createContext({});
@@ -17,6 +17,7 @@ const DataContext = React.createContext({});
 export interface State {
   products: Record<string, ComputedProduct>;
   modules: Record<string, Module>;
+  modulesUpdateDate: Date;
   computedModules: Record<string, ComputedModule>;
 }
 
@@ -31,20 +32,14 @@ export enum ActionTypes {
   ChangeMultiplier,
   ComputeModules,
   UpdateBench,
+  FetchModules,
 }
 
 const initialState = {
   products: {},
-  modules: initModulesArr.reduce((acc: any, curr, i) => {
-    if (i === 1) {
-      acc = {
-        [acc.name]: acc,
-      };
-    }
-    acc[curr.name] = curr;
-    return acc;
-  }),
+  modules: {},
   computedModules: {},
+  computedModulesUpdateDate: null,
 };
 
 const parseState = (item: object, Type: any, objectPath = "name") =>
@@ -53,13 +48,15 @@ const parseState = (item: object, Type: any, objectPath = "name") =>
     objectPath
   );
 
-const getInitialState = () => {
+const fetchState = () => {
   const dataStr = localStorage.getItem(localStorageKey);
 
   if (dataStr) {
     try {
-      const { computedModules, modules, products } = JSON.parse(dataStr);
+      const savedState = JSON.parse(dataStr);
+      const { computedModules, modules, products } = savedState;
       return {
+        ...savedState,
         computedModules: parseState(
           computedModules,
           ComputedModule,
@@ -127,7 +124,29 @@ const setActionCreators = (dispatch: any) => {
 };
 
 function DataProvider(props: any) {
-  const [data, dispatch] = useReducer(reducer, getInitialState());
+  const [data, dispatch] = useReducer(reducer, fetchState());
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const modules = await fetchModules();
+
+      console.log('modules', modules);
+
+      dispatch({
+        type: ActionTypes.FetchModules,
+        payload: {
+          modules,
+          updateDate: new Date(),
+        }
+      });
+    }
+
+    if (!toArray(data.modules).length) {
+      fetchData();
+    }
+
+  }, []);
+
   const actionCreators: ActionCreatorsType = setActionCreators(dispatch);
   localStorage.setItem(localStorageKey, JSON.stringify(data));
 
