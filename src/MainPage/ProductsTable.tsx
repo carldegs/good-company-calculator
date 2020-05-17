@@ -9,7 +9,13 @@ import {
   NeededModule,
 } from "../lib/model";
 
-const ProductsTable = () => {
+interface IProps {
+  onEditProduct?: Function;
+}
+
+const ProductsTable = ({
+  onEditProduct,
+}: IProps) => {
   const { data, changeMultiplier, computeModules, removeProduct } = useContext(
     DataContext
   ) as DataContextType;
@@ -24,6 +30,13 @@ const ProductsTable = () => {
     removeProduct(name);
     computeModules();
   };
+
+  const handleEditProduct = (e: any, { name }: any) => {
+    const product: FlatComputedProduct = products[name].flatten();
+    if (onEditProduct) {
+      onEditProduct(product);
+    }
+  }
 
   const columns = [
     {
@@ -68,9 +81,14 @@ const ProductsTable = () => {
       value: "actions",
       sortable: false,
       render: (row: FlatComputedProduct) => (
-        <Button icon basic name={row.name} onClick={handleRemoveProduct}>
-          <Icon name="remove" />
-        </Button>
+        <div style={{display: "flex"}}>
+          <Button icon basic name={row.name} onClick={handleEditProduct}>
+            <Icon name="edit" />
+          </Button>
+          <Button icon basic name={row.name} onClick={handleRemoveProduct}>
+            <Icon name="remove" />
+          </Button>
+        </div>
       ),
     },
   ];

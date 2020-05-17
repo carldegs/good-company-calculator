@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Modal,
   ModalProps,
@@ -8,15 +8,18 @@ import {
   Input,
   Grid,
 } from "semantic-ui-react";
-import { Module } from "../lib/model";
+import { Module, FlatComputedProduct, NeededModule } from "../lib/model";
 import { DataContext, DataContextType } from "../lib/DataContext";
 
-interface IProps extends ModalProps {}
+interface IProps extends ModalProps {
+  edit?: boolean,
+  product: FlatComputedProduct|null,
+}
 
-const AddProductModal = ({ onClose, ...props }: IProps) => {
+const AddProductModal = ({ onClose, edit, product, ...props }: IProps) => {
   const { data, addProduct, computeModules } = useContext(DataContext) as DataContextType;
   const [name, setName] = useState("");
-  const [value, setValue] = useState([]);
+  const [value, setValue] = useState([] as any[]);
   const [modules, setModules] = useState({} as Record<string, number>);
   const options: DropdownItemProps[] = (Object.values(
     data.modules
@@ -30,13 +33,30 @@ const AddProductModal = ({ onClose, ...props }: IProps) => {
     };
   });
 
+  useEffect(() => {
+    console.log(!!edit, !!product);
+    if (edit && product) {
+      setName(product.name);
+      let newModules: any = {};
+      let newValue: any[] = [];
+      product.neededModules.forEach((neededModule: NeededModule) => {
+        const { amount, name: neededModuleName } = neededModule;
+        newModules[neededModuleName] = amount;
+        newValue = [...newValue, neededModuleName];
+      });
+
+      setValue(newValue);
+      setModules(newModules);
+    }
+  }, [product, edit]);
+
   const handleChange = (e: any, { value: val }: any) => {
     setValue(val);
 
     let newModules = {} as Record<string, number>;
     val.forEach((moduleName: string) => {
       if (!modules[moduleName]) {
-        newModules[moduleName] = 0;
+        newModules[moduleName] = 1;
       } else {
         newModules[moduleName] = modules[moduleName];
       }
@@ -70,7 +90,7 @@ const AddProductModal = ({ onClose, ...props }: IProps) => {
     }
   };
 
-  console.log(value, modules);
+  console.log('x', name, value, modules);
   return (
     <Modal onClose={onClose} {...props}>
       <Modal.Header>Add Product</Modal.Header>
@@ -80,6 +100,7 @@ const AddProductModal = ({ onClose, ...props }: IProps) => {
             label="Product name"
             type="string"
             onChange={handleNameChange}
+            value={name}
           />
           <Form.Dropdown
             label="Add modules"
@@ -111,7 +132,7 @@ const AddProductModal = ({ onClose, ...props }: IProps) => {
       </Modal.Content>
       <Modal.Actions>
         <Button primary onClick={createProduct}>
-          Create Product
+          { edit ? 'Edit Product' : 'Create Product' }
         </Button>
       </Modal.Actions>
     </Modal>

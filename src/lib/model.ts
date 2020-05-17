@@ -138,8 +138,6 @@ export class ComputedModule {
       .map((p) => p.isSameParent(parent))
       .indexOf(true);
 
-    console.log("test2", parent, this.parents, sameParentIndex);
-
     if (sameParentIndex >= 0) {
       let newParents = this.parents.map((p, i) =>
         i === sameParentIndex

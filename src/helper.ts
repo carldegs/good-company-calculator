@@ -14,7 +14,6 @@ export const sorter = (param: string) => {
 };
 
 export const stringifyEnum = (enumObj: any, value: any) => {
-  console.log('test3', value);
   const text: string = enumObj[value];
   return text.replace(/([A-Z])/g, " $1");
 };
@@ -72,7 +71,7 @@ export const createComputedModules = (
     product = (product as ComputedProduct).flatten();
     const { neededModules } = product;
 
-    res = recursion(res, modules, neededModules, "", product.multiplier, product);
+    res = recursion(res, modules, neededModules, "", product.multiplier, 1, product);
   }
 
   return res;
@@ -84,11 +83,12 @@ const recursion = (
   neededModules: NeededModule[],
   parentName: string,
   parentNeeded: number,
+  parentOutput: number,
   product: FlatComputedProduct
 ) => {
   for (let neededModule of neededModules as NeededModule[]) {
     const { name, amount: amountNeeded } = neededModule;
-    const totalAmountNeeded = amountNeeded * parentNeeded;
+    const totalAmountNeeded = amountNeeded * (parentNeeded / parentOutput);
     const parentModule = new ParentModule(
       parentName,
       product.name,
@@ -105,7 +105,8 @@ const recursion = (
       res[name] = (res[name] as ComputedModule).addParent(parentModule);
     }
 
-    recursion(res, modules, module.neededModules, module.name, totalAmountNeeded, product);
+    console.log('x', name, totalAmountNeeded, amountNeeded, parentNeeded, parentOutput);
+    recursion(res, modules, module.neededModules, module.name, totalAmountNeeded, module.output, product);
   }
 
   return res;
